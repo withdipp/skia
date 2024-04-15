@@ -23,6 +23,12 @@
 #include "src/core/SkSurfacePriv.h"
 #include "src/core/SkWriteBuffer.h"
 
+/**
+ * define how many times extra width will added base font size,
+ * increase this character will more width.
+ * */
+#define SKFONT_WITHDIPP_EXTRA_WIDTH 0.020f
+
 class SkAutoDescriptor;
 class SkDescriptor;
 class SkMaskFilter;

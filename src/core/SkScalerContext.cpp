@@ -1054,6 +1054,27 @@ void SkScalerContext::MakeRecAndEffects(const SkFont& font, const SkPaint& paint
 #ifdef SK_USE_FREETYPE_EMBOLDEN
         flags |= SkScalerContext::kEmbolden_Flag;
 #else
+    #ifdef __linux__
+        /**
+         * custom changes for dipp.com that drawing character width,
+         * the orignal problem was 
+         * https://linear.app/dipp/issue/DIP-1283
+         * https://linear.app/dipp/issue/DIP-1282
+         * 
+         * and there had different text render lib in Mac OS & Linux.
+         * to make it more width for each character on linux.
+         * 
+         * to modify the width check SKFONT_WITHDIPP_EXTRA_WIDTH
+        */
+        SkScalar extra = font.getSize() * SKFONT_WITHDIPP_EXTRA_WIDTH;
+
+        if (style == SkPaint::kFill_Style) {
+            style = SkPaint::kStrokeAndFill_Style;
+            strokeWidth = extra;    // ignore paint's strokeWidth if it was "fill"
+        } else {
+            strokeWidth += extra;
+        }
+    #else
         SkScalar fakeBoldScale = SkScalarInterpFunc(font.getSize(),
                                                     kStdFakeBoldInterpKeys,
                                                     kStdFakeBoldInterpValues,
@@ -1066,6 +1087,7 @@ void SkScalerContext::MakeRecAndEffects(const SkFont& font, const SkPaint& paint
         } else {
             strokeWidth += extra;
         }
+    #endif
 #endif
     }
 
